@@ -14,7 +14,7 @@
  *      ``The Whirlpool hashing function,''
  *      NESSIE submission, 2000 (tweaked version, 2001),
  *      <https://www.cosic.esat.kuleuven.ac.be/nessie/workshop/submissions/whirlpool.zip>
- * 
+ *
  * @author  Paulo S.L.M. Barreto
  * @author  Vincent Rijmen.
  *
@@ -1628,7 +1628,7 @@ void NESSIEadd(const unsigned char * const source,
 
 /**
  * Get the hash value from the hashing state.
- * 
+ *
  * This method uses the invariant: bufferBits < DIGESTBITS
  */
 void NESSIEfinalize(struct NESSIEstruct * const structpointer,
@@ -1715,7 +1715,7 @@ static void display(const u8 array[], int length) {
  * 2. hashing all 512-bit strings containing a single set bit;
  * 3. the iterated hashing of the 512-bit string of zero bits a large number of times.
  */
-void makeNESSIETestVectors() {
+void makeNESSIETestVectors(void) {
     int i;
     struct NESSIEstruct w;
     u8 digest[DIGESTBYTES];
@@ -1758,14 +1758,14 @@ void makeNESSIETestVectors() {
 /*
 #define TIMING_ITERATIONS 100000
 
-static void timing() {
+static void timing(void) {
     int i;
     NESSIEstruct w;
     u8 digest[DIGESTBYTES];
     u8 data[1024];
     clock_t elapsed;
     float sec;
-    
+
     memset(data, 0, sizeof(data));
 
     printf("Overall timing...");
@@ -1842,7 +1842,7 @@ void testAPI(void) {
     printf("No error detected.\n");
 }
 
-void makeISOTestVectors() {
+void makeISOTestVectors(void) {
     struct NESSIEstruct w;
     u8 digest[DIGESTBYTES];
     static u8 data[1000000];
@@ -1920,7 +1920,7 @@ void makeISOTestVectors() {
 }
 
 #ifdef TRACE_INTERMEDIATE_VALUES
-static void makeIntermediateValues() {
+static void makeIntermediateValues(void) {
     struct NESSIEstruct w;
     u8 digest[DIGESTBYTES];
 
