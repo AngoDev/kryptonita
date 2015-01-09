@@ -8,9 +8,9 @@ Gem::Specification.new do |spec|
   spec.version       = Kryptonita::VERSION
   spec.authors       = ["Patrício dos Santos"]
   spec.email         = ["ps@patriciodossantos.net"]
-  spec.summary       = %q{TODO: Write a short summary. Required.}
-  spec.description   = %q{TODO: Write a longer description. Optional.}
-  spec.homepage      = ""
+  spec.summary       = %q{Kryptonita is a Ruby gem that provides a lot of functions for hashing, encrypt and decrypt}
+  spec.description   = %q{Kryptonita is a Ruby gem that provides a lot of functions for hashing, encrypt and decrypt.}
+  spec.homepage      = "https://github.com/AngoDev/kryptonita"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
@@ -20,4 +20,5 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "bundler", "~> 1.7"
   spec.add_development_dependency "rake", "~> 10.0"
+  spec.add_development_dependency "rspec"
 end
