@@ -1,3 +1,5 @@
 require "mkmf"
 
-create_makefile "whirlpool/whirlpool"
+dir_config('whirlpool')
+
+create_makefile "whirlpool"

@@ -1,5 +1,13 @@
 require "kryptonita/version"
+require "whirlpool/whirlpool"
 
 module Kryptonita
-  # Your code goes here...
+  class Hash
+
+    def self.whirlpool(str)
+      w = Whirlpool::Class.new
+      w.print_string(str).downcase
+    end
+
+  end
 end

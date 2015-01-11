@@ -55,6 +55,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#include <ruby.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -69,6 +70,9 @@
  * The number of rounds of the internal dedicated block cipher.
  */
 #define R 10
+
+VALUE rb_mWhirlpool;
+VALUE rb_cClass;
 
 /*
  * Though Whirlpool is endianness-neutral, the encryption tables are listed
@@ -1691,6 +1695,7 @@ void NESSIEfinalize(struct NESSIEstruct * const structpointer,
     structpointer->bufferPos    = bufferPos;
 }
 
+/*
 static void display(const u8 array[], int length) {
     int i;
     for (i = 0; i < length; i++) {
@@ -1703,253 +1708,71 @@ static void display(const u8 array[], int length) {
         printf("%02X", array[i]);
     }
 }
-
+*/
 #define LONG_ITERATION 100000000
 
-/**
- * Generate the test vector set for Whirlpool.
- *
- * The test consists of:
- * 1. hashing all bit strings containing only zero bits
- *    for all lengths from 0 to 1023;
- * 2. hashing all 512-bit strings containing a single set bit;
- * 3. the iterated hashing of the 512-bit string of zero bits a large number of times.
- */
-void makeNESSIETestVectors(void) {
-    int i;
-    struct NESSIEstruct w;
-    u8 digest[DIGESTBYTES];
-    u8 data[128];
+static char* displayHash(const unsigned char array[], int length){
+  int i, k;
+  char *str;
 
-    memset(data, 0, sizeof(data));
-    printf("Message digests of strings of 0-bits and length L:\n");
-    for (i = 0; i < 1024; i++) {
-        NESSIEinit(&w);
-        NESSIEadd(data, i, &w);
-        NESSIEfinalize(&w, digest);
-        printf("    L = %4d: ", i); display(digest, DIGESTBYTES); printf("\n");
-    }
-    printf("Message digests of all 512-bit strings S containing a single 1-bit:\n");
-    memset(data, 0, sizeof(data));
-    for (i = 0; i < 512; i++) {
-        /* set bit i: */
-        data[i/8] |= 0x80U >> (i % 8);
-        NESSIEinit(&w);
-        NESSIEadd(data, 512, &w);
-        NESSIEfinalize(&w, digest);
-        printf("    S = "); display(data, 512/8); printf(": ");
-        display(digest, DIGESTBYTES); printf("\n");
-        /* reset bit i: */
-        data[i/8] = 0;
-    }
-    memset(digest, 0, sizeof(digest));
-    for (i = 0; i < LONG_ITERATION; i++) {
-        NESSIEinit(&w);
-        NESSIEadd(digest, 512, &w);
-        NESSIEfinalize(&w, digest);
-    }
-    fflush(stdout);
-    printf("Iterated message digest computation (%d times): ", LONG_ITERATION);
-    display(digest, DIGESTBYTES); printf("\n");
-}
+  str = malloc(3 * length + 1);
+  if (str == NULL) {
+    return NULL;
+  }
 
+  k = 0;
+  str[0] = '\0';
 
-
+  for (i = 0; i < length; i++){
+    char hex[3];
 /*
-#define TIMING_ITERATIONS 100000
-
-static void timing(void) {
-    int i;
-    NESSIEstruct w;
-    u8 digest[DIGESTBYTES];
-    u8 data[1024];
-    clock_t elapsed;
-    float sec;
-
-    memset(data, 0, sizeof(data));
-
-    printf("Overall timing...");
-    elapsed = -clock();
-    for (i = 0; i < TIMING_ITERATIONS; i++) {
-        NESSIEinit(&w);
-        NESSIEadd(data, 8*sizeof(data), &w);
-        NESSIEfinalize(&w, digest);
+    if (i % 32 == 0){
+      str[k++] = ' ';
     }
-    elapsed += clock();
-    sec = (float)elapsed/CLOCKS_PER_SEC;
-    printf(" %.1f s, %.1f Mbit/s, %.1f cycles/byte.\n",
-        sec,
-        (float)8*sizeof(data)*TIMING_ITERATIONS/sec/1000000,
-        (float)550e6*sec/(sizeof(data)*TIMING_ITERATIONS));
 
-    printf("Compression function timing...");
-    NESSIEinit(&w);
-    elapsed = -clock();
-    for (i = 0; i < TIMING_ITERATIONS; i++) {
-        processBuffer(&w);
+    if (i % 8 == 0){
+      str[k++] = ' ';
     }
-    elapsed += clock();
-    NESSIEfinalize(&w, digest);
-    sec = (float)elapsed/CLOCKS_PER_SEC;
-    printf(" %.1f s, %.1f Mbit/s, %.1f cycles/byte.\n",
-        sec,
-        (float)512*TIMING_ITERATIONS/sec/1000000,
-        (float)550e6*sec/(64*TIMING_ITERATIONS));
-}
-*/
+    */
 
-void testAPI(void) {
-    u32 pieceLen, totalLen, dataLen;
-    NESSIEstruct w;
-    u8 dataBuf[512], expectedDigest[DIGESTBYTES], computedDigest[DIGESTBYTES];
+    snprintf(hex, sizeof(hex), "%02X", array[i]);
 
-    for (dataLen = 0; dataLen <= sizeof(dataBuf); dataLen++) {
-        if ((dataLen & 0xff) == 0) {
-            fprintf(stderr, "."); fflush(stderr);
-        }
-        /*
-         * do the hashing in pieces of variable length:
-         */
-        NESSIEinit(&w);
-        NESSIEadd(dataBuf, 8*dataLen, &w);
-        NESSIEfinalize(&w, expectedDigest);
-        if (dataLen > 0) {
-            for (pieceLen = 1; pieceLen <= dataLen; pieceLen++) {
-                NESSIEinit(&w);
-                for (totalLen = 0; totalLen + pieceLen <= dataLen; totalLen += pieceLen) {
-                    NESSIEadd(dataBuf + totalLen, 8*pieceLen, &w);
-                }
-                if (totalLen < dataLen) {
-                    NESSIEadd(dataBuf + totalLen, 8*(dataLen - totalLen), &w);
-                }
-                NESSIEfinalize(&w, computedDigest);
-                if (memcmp(computedDigest, expectedDigest, DIGESTBYTES) != 0) {
-                    fprintf(stderr, "API error @ pieceLen = %u\n", pieceLen);
-                    display(computedDigest, DIGESTBYTES); printf("\n\n");
-                    display(expectedDigest, DIGESTBYTES); printf("\n\n");
-                    return;
-                }
-            }
-        } else {
-            NESSIEinit(&w);
-            NESSIEfinalize(&w, computedDigest);
-            if (memcmp(computedDigest, expectedDigest, DIGESTBYTES) != 0) {
-                fprintf(stderr, "API error @ pieceLen = 0\n");
-                return;
-            }
-        }
-    }
-    printf("No error detected.\n");
+    str[k++] = hex[0];
+    str[k++] = hex[1];
+  }
+
+  str[k] = '\0';
+
+  return str;
 }
 
-void makeISOTestVectors(void) {
-    struct NESSIEstruct w;
-    u8 digest[DIGESTBYTES];
-    static u8 data[1000000];
+VALUE
+print_string(VALUE class, VALUE valor) {
+  struct NESSIEstruct w;
+  u8 digest[DIGESTBYTES];
+  VALUE info;
+  char* valor2 = RSTRING_PTR(valor);
 
-    memset(data, 0, sizeof(data));
+  int i;
+  for (i = 0; valor2[i] != '\0'; i++);
+  int sizeo = i;
 
-    printf("1. In this example the data-string is the empty string, i.e. the string of length zero.\n\n");
-    NESSIEinit(&w);
-    NESSIEadd(data, 8*0, &w);
-    NESSIEfinalize(&w, digest);
-    printf("The hash-code is the following 512-bit string.\n\n");
-    display(digest, DIGESTBYTES); printf("\n\n");
+  NESSIEinit(&w);
+  //NESSIEadd((u8*)valor, 8*sizeo, &w);
+  NESSIEadd((u8*)valor2, 8*sizeo, &w);
+  NESSIEfinalize(&w, digest);
 
-    printf("2. In this example the data-string consists of a single byte, namely the ASCII-coded version of the letter 'a'.\n\n");
-    NESSIEinit(&w);
-    NESSIEadd((u8*)"a", 8*1, &w);
-    NESSIEfinalize(&w, digest);
-    printf("The hash-code is the following 512-bit string.\n\n");
-    display(digest, DIGESTBYTES); printf("\n\n");
+  info = rb_str_new_cstr(displayHash(digest, DIGESTBYTES));
+  //info = rb_str_new2(displayHash(digest, DIGESTBYTES));
+  //info = rb_str_new_cstr(valor2);
 
-    printf("3. In this example the data-string is the three-byte string consisting of the ASCII-coded version of 'abc'.\n\n");
-    NESSIEinit(&w);
-    NESSIEadd((u8*)"abc", 8*3, &w);
-    NESSIEfinalize(&w, digest);
-    printf("The hash-code is the following 512-bit string.\n\n");
-    display(digest, DIGESTBYTES); printf("\n\n");
-
-    printf("4. In this example the data-string is the 14-byte string consisting of the ASCII-coded version of 'message digest'.\n\n");
-    NESSIEinit(&w);
-    NESSIEadd((u8*)"message digest", 8*14, &w);
-    NESSIEfinalize(&w, digest);
-    printf("The hash-code is the following 512-bit string.\n\n");
-    display(digest, DIGESTBYTES); printf("\n\n");
-
-    printf("5. In this example the data-string is the 26-byte string consisting of the ASCII-coded version of 'abcdefghijklmnopqrstuvwxyz'.\n\n");
-    NESSIEinit(&w);
-    NESSIEadd((u8*)"abcdefghijklmnopqrstuvwxyz", 8*26, &w);
-    NESSIEfinalize(&w, digest);
-    printf("The hash-code is the following 512-bit string.\n\n");
-    display(digest, DIGESTBYTES); printf("\n\n");
-
-    printf("6. In this example the data-string is the 62-byte string consisting of the ASCII-coded version of 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'.\n\n");
-    NESSIEinit(&w);
-    NESSIEadd((u8*)"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", 8*62, &w);
-    NESSIEfinalize(&w, digest);
-    printf("The hash-code is the following 512-bit string.\n\n");
-    display(digest, DIGESTBYTES); printf("\n\n");
-
-    printf("7. In this example the data-string is the 80-byte string consisting of the ASCII-coded version of eight repetitions of '1234567890'.\n\n");
-    NESSIEinit(&w);
-    NESSIEadd((u8*)"12345678901234567890123456789012345678901234567890123456789012345678901234567890", 8*80, &w);
-    NESSIEfinalize(&w, digest);
-    printf("The hash-code is the following 512-bit string.\n\n");
-    display(digest, DIGESTBYTES); printf("\n\n");
-
-    printf("8. In this example the data-string is the 32-byte string consisting of the ASCII-coded version of 'abcdbcdecdefdefgefghfghighijhijk'.\n\n");
-    NESSIEinit(&w);
-    NESSIEadd((u8*)"abcdbcdecdefdefgefghfghighijhijk", 8*32, &w);
-    NESSIEfinalize(&w, digest);
-    printf("The hash-code is the following 512-bit string.\n\n");
-    display(digest, DIGESTBYTES); printf("\n\n");
-    fflush(stdout);
-
-    memset(data, 'a', 1000000);
-    printf("9. In this example the data-string is the 1000000-byte string consisting of the ASCII-coded version of 'a' repeated 10^6 times.\n\n");
-    NESSIEinit(&w);
-    NESSIEadd(data, 8*1000000, &w);
-    NESSIEfinalize(&w, digest);
-    printf("The hash-code is the following 512-bit string.\n\n");
-    display(digest, DIGESTBYTES); printf("\n\n");
-    fflush(stdout);
-
-    printf("\n");
-    fflush(stdout);
+  return info;
 }
 
-#ifdef TRACE_INTERMEDIATE_VALUES
-static void makeIntermediateValues(void) {
-    struct NESSIEstruct w;
-    u8 digest[DIGESTBYTES];
+void
+Init_whirlpool(){
+  rb_mWhirlpool = rb_define_module("Whirlpool");
+  rb_cClass = rb_define_class_under(rb_mWhirlpool, "Class", rb_cObject);
 
-    printf("3. In this example the data-string is the three-byte string consisting of the ASCII-coded version of 'abc'.\n\n");
-    NESSIEinit(&w);
-    NESSIEadd("abc", 8*3, &w);
-    NESSIEfinalize(&w, digest);
-    printf("The hash-code is the following 512-bit string.\n\n");
-    display(digest, DIGESTBYTES); printf("\n\n");
-
-    printf("8. In this example the data-string is the 32-byte string consisting of the ASCII-coded version of 'abcdbcdecdefdefgefghfghighijhijk'.\n\n");
-    NESSIEinit(&w);
-    NESSIEadd("abcdbcdecdefdefgefghfghighijhijk", 8*32, &w);
-    NESSIEfinalize(&w, digest);
-    printf("The hash-code is the following 512-bit string.\n\n");
-    display(digest, DIGESTBYTES); printf("\n\n");
-    fflush(stdout);
-
-    fflush(stdout);
-}
-#endif /* ?TRACE_INTERMEDIATE_VALUES */
-
-int main(int argc, char *argv[]) {
-    /* testAPI(); */
-    /* makeNESSIETestVectors(); */
-    makeISOTestVectors();
-#ifdef TRACE_INTERMEDIATE_VALUES
-    makeIntermediateValues();
-#endif /* ?TRACE_INTERMEDIATE_VALUES */
-    /* timing(); */
-    return 0;
+  rb_define_method(rb_cClass, "print_string", print_string, 1);
 }
