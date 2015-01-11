@@ -1,4 +1,4 @@
-# Kryptonita [![Gem Version](https://badge.fury.io/rb/kryptonita.svg)](http://badge.fury.io/rb/kryptonita) [![Code Climate](https://codeclimate.com/github/AngoDev/kryptonita/badges/gpa.svg)](https://codeclimate.com/github/AngoDev/kryptonita)
+# Kryptonita [![Gem Version](https://badge.fury.io/rb/kryptonita.svg)](http://badge.fury.io/rb/kryptonita) [![Code Climate](https://codeclimate.com/github/AngoDev/kryptonita/badges/gpa.svg)](https://codeclimate.com/github/AngoDev/kryptonita) [![Build Status](https://travis-ci.org/AngoDev/kryptonita.svg)](https://travis-ci.org/AngoDev/kryptonita)
 
 Kryptonita is a Ruby gem that provides a lot of functions for hashing, encrypt and decrypt
 
