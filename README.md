@@ -35,7 +35,7 @@ Kryptonita::Hash.whirlpool("ruby")
 ```ruby
 Kryptonita::Hash.whirlpool(str)
 Kryptonita::Hash.sha512(str)
-``
+```
 
 ## Contributing
 
