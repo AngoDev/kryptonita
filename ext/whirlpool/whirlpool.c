@@ -1758,7 +1758,6 @@ print_string(VALUE class, VALUE valor) {
   int sizeo = i;
 
   NESSIEinit(&w);
-  //NESSIEadd((u8*)valor, 8*sizeo, &w);
   NESSIEadd((u8*)valor2, 8*sizeo, &w);
   NESSIEfinalize(&w, digest);
 

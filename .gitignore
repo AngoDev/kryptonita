@@ -9,7 +9,7 @@
 /tmp/
 
 *.so
-*.o
+
 *.a
 mkmf.log
 

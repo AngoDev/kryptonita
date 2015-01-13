@@ -18,10 +18,12 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
-  spec.extensions = %w[ext/whirlpool/extconf.rb]
+  spec.platform = Gem::Platform::RUBY
+  spec.extensions = %w[ext/**/extconf.rb]
 
-  spec.required_ruby_version = "~> 2.1"
+  spec.required_ruby_version = ">= 2.0.0"
   spec.add_development_dependency "bundler", "~> 1.7"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.1.0"
+  spec.add_development_dependency "rake-compiler"
 end
