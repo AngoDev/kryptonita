@@ -6,6 +6,7 @@ require 'kryptonita/version'
 Gem::Specification.new do |spec|
   spec.name          = "kryptonita"
   spec.version       = Kryptonita::VERSION
+  spec.platform = Gem::Platform::RUBY
   spec.authors       = ["Patrício dos Santos"]
   spec.email         = ["ps@patriciodossantos.net"]
   spec.summary       = %q{Kryptonita is a Ruby gem that provides a lot of functions for hashing, encrypt and decrypt}
@@ -18,7 +19,7 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
-  spec.platform = Gem::Platform::RUBY
+  spec.require_paths = ['lib']
   spec.extensions = %w[ext/whirlpool/extconf.rb]
 
   spec.required_ruby_version = ">= 2.0.0"
