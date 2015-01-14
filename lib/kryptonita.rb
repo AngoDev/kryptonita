@@ -1,5 +1,5 @@
 require "kryptonita/version"
-require "whirlpool/whirlpool"
+require "./whirlpool/whirlpool"
 require "digest/sha2"
 
 module Kryptonita
