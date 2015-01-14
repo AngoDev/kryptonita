@@ -1,10 +1,6 @@
-# Kryptonita [![Gem Version](https://badge.fury.io/rb/kryptonita.svg)](http://badge.fury.io/rb/kryptonita) [![Code Climate](https://codeclimate.com/github/AngoDev/kryptonita/badges/gpa.svg)](https://codeclimate.com/github/AngoDev/kryptonita) [![Test Coverage](https://codeclimate.com/github/psantos10/Validation/badges/coverage.svg)](https://codeclimate.com/github/psantos10/Validation) 
+# Kryptonita [![Gem Version](https://badge.fury.io/rb/kryptonita.svg)](http://badge.fury.io/rb/kryptonita) [![Code Climate](https://codeclimate.com/github/AngoDev/kryptonita/badges/gpa.svg)](https://codeclimate.com/github/AngoDev/kryptonita) [![Test Coverage](https://codeclimate.com/github/psantos10/Validation/badges/coverage.svg)](https://codeclimate.com/github/psantos10/Validation)
 
 Kryptonita is a Ruby gem that provides a lot of functions for hashing, encrypt and decrypt
-
-## Available Hash Functions
-
-- Whirlpool (Return a String with 128 length)
 
 ## Installation
 
@@ -35,8 +31,9 @@ puts Kryptonita::Hash.whirlpool("ruby")
 
 
 ```ruby
-Kryptonita::Hash.whirlpool(str)
+Kryptonita::Hash.sha1(str)
 Kryptonita::Hash.sha512(str)
+Kryptonita::Hash.whirlpool(str)
 ```
 
 ## Contributing
