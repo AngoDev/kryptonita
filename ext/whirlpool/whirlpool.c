@@ -1754,16 +1754,16 @@ print_string(VALUE class, VALUE valor) {
   char* valor2 = RSTRING_PTR(valor);
 
   int i;
+  int sizeo;
+
   for (i = 0; valor2[i] != '\0'; i++);
-  int sizeo = i;
+  sizeo = i;
 
   NESSIEinit(&w);
   NESSIEadd((u8*)valor2, 8*sizeo, &w);
   NESSIEfinalize(&w, digest);
 
   info = rb_str_new_cstr(displayHash(digest, DIGESTBYTES));
-  //info = rb_str_new2(displayHash(digest, DIGESTBYTES));
-  //info = rb_str_new_cstr(valor2);
 
   return info;
 }
