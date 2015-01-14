@@ -1,5 +1,14 @@
+ENV['RC_ARCHS'] = '' if RUBY_PLATFORM =~ /darwin/
+
 require "mkmf"
 
-dir_config('whirlpool')
+RbConfig::MAKEFILE_CONFIG['CC'] = ENV['CC'] if ENV['CC']
 
-create_makefile "whirlpool"
+dir_config("whirlpool")
+
+if RbConfig::CONFIG["host_os"] =~ /mswin/
+  $CFLAGS << ' -W3'
+end
+
+#create_makefile "whirlpool"
+create_makefile "whirlpool/whirlpool"
