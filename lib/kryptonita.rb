@@ -7,7 +7,7 @@ begin
   RUBY_VERSION =~ /(\d+.\d+)/
   require "whirlpool/#{$1}/whirlpool"
 rescue LoadError
-  require './whirlpool/whirlpool'
+  require 'whirlpool/whirlpool'
 end
 
 module Kryptonita
