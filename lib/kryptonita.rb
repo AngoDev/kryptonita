@@ -1,6 +1,14 @@
 require "kryptonita/version"
-require "./whirlpool/whirlpool"
+#require "./whirlpool/whirlpool"
 require "digest/sha2"
+
+# Support multiple ruby versions, fat binaries under Windows.
+begin
+  RUBY_VERSION =~ /(\d+.\d+)/
+  require "whirlpool/#{$1}/whirlpool"
+rescue LoadError
+  require 'whirlpool/whirlpool'
+end
 
 module Kryptonita
   class Hash
