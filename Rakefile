@@ -6,7 +6,7 @@ RSpec::Core::RakeTask.new(:spec)
 
 gemspec = Gem::Specification::load(File.expand_path('../kryptonita.gemspec', __FILE__))
 
-#task :build => [:clean, :compile]
+task :build => [:clean, :compile]
 
 task default: [:build, :spec]
 
