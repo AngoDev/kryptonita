@@ -1,7 +1,6 @@
 require "kryptonita/version"
 #require "./whirlpool/whirlpool"
-require "digest/sha1"
-require "digest/sha2"
+require "digest"
 
 # Support multiple ruby versions, fat binaries under Windows.
 begin
@@ -13,6 +12,14 @@ end
 
 module Kryptonita
   class Hash
+
+    def self.md5(str, salt: nil)
+      if salt.nil?
+        Digest::MD5.hexdigest(str)
+      else
+        Digest::MD5.hexdigest(Digest::MD5.digest(str) + salt)
+      end
+    end
 
     def self.sha1(str)
       Digest::SHA1.hexdigest(str)

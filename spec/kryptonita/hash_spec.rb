@@ -3,6 +3,26 @@ require "spec_helper"
 module Kryptonita
   describe Hash do
 
+    describe "md5" do
+      let(:hashed) { Kryptonita::Hash.md5("ruby") }
+      let(:hashed_with_salt) { Kryptonita::Hash.md5("ruby", salt: 'salt') }
+
+      it "returns a string" do
+        expect(hashed).to be_a(String)
+        expect(hashed_with_salt).to be_a(String)
+      end
+
+      it "returns a string with size 32" do
+        expect(hashed.size).to eq(32)
+        expect(hashed_with_salt.size).to eq(32)
+      end
+
+      it "returns a correct hash" do
+        expect(hashed).to eql("58e53d1324eef6265fdb97b08ed9aadf")
+        expect(hashed_with_salt).to eql("cb2dfb8002036f039bd61a1c1fbbbd3c")
+      end
+    end
+
     describe "sha1" do
       let(:hashed) { Kryptonita::Hash.sha1("ruby") }
 

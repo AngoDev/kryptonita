@@ -31,6 +31,8 @@ puts Kryptonita::Hash.whirlpool("ruby")
 
 
 ```ruby
+Kryptonita::Hash.md5(str)
+Kryptonita::Hash.md5(str, salt: 'mysalt')
 Kryptonita::Hash.sha1(str)
 Kryptonita::Hash.sha512(str)
 Kryptonita::Hash.whirlpool(str)
